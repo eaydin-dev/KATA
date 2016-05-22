@@ -10,26 +10,27 @@ public class Suite {
 	}
 
 	public static double going(int n) {
-		double first = (1.0/factorial(n));
-		long chain = chainFactorial(n);
-		BigDecimal bd = new BigDecimal(String.valueOf(first * chain)).setScale(6, BigDecimal.ROUND_HALF_UP);
-		return Double.parseDouble(bd.toString());
-	}
+		double result;
 
-	public static long chainFactorial(int n){
-		long result = 0;
-		for (int i = 1; i <= n; ++i)
-			result += factorial(i);
-		
-		return result;
-	}
+		// to calculate extra large factorials, create BigDecimal with initial value of 1
+		BigDecimal fact = new BigDecimal(1);//.setScale(6, BigDecimal.ROUND_UNNECESSARY);
 
-	public static long factorial(int n) {
-	    long fact = 1;
-	    for (int i = 1; i <= n; i++)
-	        fact *= i;
-	    
-	    return fact;
+		// to sum up all these factorials, create another BigDecimal object with initial value of 0
+		// set its scale to 6. fact object does not need this since we are handling it here.
+		BigDecimal chainOfFact = new BigDecimal(0).setScale(6, BigDecimal.ROUND_UNNECESSARY);
+
+		for (int i = 1; i <= n; ++i) {
+			fact = fact.multiply(BigDecimal.valueOf(i));
+			chainOfFact = chainOfFact.add(fact);
+		}
+
+		try{
+			result = chainOfFact.divide(fact, BigDecimal.ROUND_UNNECESSARY).doubleValue();
+		} catch(ArithmeticException ex){
+			result = chainOfFact.divide(fact, BigDecimal.ROUND_FLOOR).doubleValue();
+		}
+
+		return result; 
 	}
 }
 
