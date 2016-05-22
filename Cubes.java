@@ -1,96 +1,85 @@
-
 import java.util.List;
 import java.util.ArrayList;
 
 class Cubes {
-	
-	public static void main(String[] args) {
-		/*List<Integer> intList = new ArrayList<>();
-		handleLargeNum(1234567, intList);
-		for (int i = 0; i < intList.size(); ++i){
-			System.out.println("> " + intList.get(i));
-    	}*/
+  
+  public String isSumOfCubes(String s) {
+    int num, cubicSum = 0;
+    s = s.replaceAll("[^0-9]+", " ");  // use regex to select nums
+    String[] strArr = s.trim().split(" ");  // take them as array
+    
+    List<Integer> intList = new ArrayList<>();
+    StringBuilder sb = new StringBuilder();
 
-		System.out.println(isSumOfCubes("QK29 45[&erui"));
-	}
+    for (int i = 0; i < strArr.length; ++i){
+      num = Integer.parseInt(strArr[i]);
+      if (numOfDigits(num) > 3) // if this num has more than 3 digits, then handle it
+        handleLargeNum(num, intList);
+      else
+        intList.add(num); // otherwise, add it to the list that contain the nums to be processed
+    }
+      
+      for (int i = 0; i < intList.size(); ++i){ // process the nums that extracted from given string
+        if (isCubic(intList.get(i))){  
+           sb.append(intList.get(i)).append(" ");  // if this is a cubic num, append it to our result string
+          cubicSum += intList.get(i);             // calculate sum of them
+        }
+      }
 
-	public static String isSumOfCubes(String s) {
-		int num;
-		s = s.replaceAll("[^0-9]+", " ");
-		String[] strArr = s.trim().split(" ");
-		List<Integer> intList = new ArrayList<>();
-		List<Integer> cubics = new ArrayList<>();
-		StringBuilder sb = new StringBuilder();
+      if (sb.toString().length() > 0){  // if there was some cubic numbers, return them with the sum
+        sb.append(cubicSum).append(" Lucky");
+        return sb.toString();
+      }
 
-		for (int i = 0; i < strArr.length; ++i){
-			num = Integer.parseInt(strArr[i]);
-			if (numOfDigits(num) > 3)
-				handleLargeNum(num, intList);
-			else
-				intList.add(num); 
-		}
-    	
-    	for (int i = 0; i < intList.size(); ++i){
-    		if (isCubic(intList.get(i))){
-    			//System.out.println("> cubic: " + intList.get(i));
-    			sb.append(intList.get(i)).append(" ");
-    			cubics.add(intList.get(i));
-    		}
-    	}
+      else 
+        return "Unlucky";
+  }
 
-    	if (!cubics.isEmpty()){
-    		sb.append(cubics.stream().mapToInt(Integer::intValue).sum()).append(" Lucky");
-    		return sb.toString();
-    	}
+  private boolean isCubic(int num){
+    int temp = num;
+    int sum = 0;
 
-    	else 
-    		return "Unlucky";
-	}
+    while(temp > 0){  // calculate cube of the digits
+      sum += Math.pow(temp%10, 3);
+      temp /= 10;
+    }
 
-	private static boolean isCubic(int num){
-		int temp = num;
-		int sum = 0;
+    return sum == num;  // check if the sum is equal to the num...
+  }
 
-		while(temp > 0){
-			sum += Math.pow(temp%10, 3);
-			temp /= 10;
-		}
+  private void handleLargeNum(int num, List<Integer> list){
+    String s = "" + num;  // given number as string
+    String n = "";        // new number
+    String r = "";        // rest of the given number
 
-		return sum == num;
-	}
+    char[] arr = s.toCharArray();
 
-	private static void handleLargeNum(int num, List<Integer> list){
-		String s = "" + num;
-		String n = "";
-		String r = "";
+    int i;
+    for(i = 0; i < 3; ++i) // take first 3 digit as a number to the string
+      n += arr[i];
+    
+    for (; i < arr.length; ++i) // take rest of the give number as another number
+      r += arr[i];
+    
 
-		char[] arr = s.toCharArray();
+    list.add(Integer.parseInt(n)); // add new number to the list
 
-		int i;
-		for(i = 0; i < 3; ++i){
-			n += arr[i];
-		}
+    int remain = Integer.parseInt(r);
+    if (numOfDigits(remain) <= 3)  // if the remain provides the condition, just add it to the list and we are done
+      list.add(remain);
+    else
+      handleLargeNum(remain, list); // otherwise, handle this number recursively (since we have the same list)
+  }
 
-		for (; i < arr.length; ++i){
-			r += arr[i];
-		}
 
-		list.add(Integer.parseInt(n));
+  // calculates the number of digits of a num
+  private int numOfDigits(int num){
+    int c = 0;
+    while(num > 0){
+      c++;
+      num /= 10;
+    }
 
-		int remain = Integer.parseInt(r);
-		if (numOfDigits(remain) <= 3)
-			list.add(remain);
-		else
-			handleLargeNum(remain, list);
-	}
-
-	private static int numOfDigits(int num){
-		int c = 0;
-		while(num > 0){
-			c++;
-			num /= 10;
-		}
-
-		return c;
-	}
+    return c;
+  }
 }
