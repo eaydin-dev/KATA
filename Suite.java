@@ -2,6 +2,9 @@
 	*** IMPORTANT ***
 
 	BEFORE LOOKING AT THIS PIECE OF CODE, TRY TO SOLVE THE PROBLEM. THE PROBLEM IS:
+
+	Kata Name: Going to zero or to infinity?
+	
 	Consider the following numbers (where n! is factorial(n)):
 
 	u1 = (1 / 1!) * (1!)
